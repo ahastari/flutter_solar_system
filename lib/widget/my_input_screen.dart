@@ -50,7 +50,8 @@ class _MyInputScreenState extends State<MyInputScreen> {
             icon: Icon(Icons.save),
           ),
         ],
-        backgroundColor: Colors.blue.withOpacity(0.5), // Ajusta la transparencia aquí
+        backgroundColor:
+            Colors.blue.withOpacity(0.5), // Ajusta la transparencia aquí
         elevation: 0, // Quita la sombra de la AppBar si lo deseas
       ),
       body: Container(
