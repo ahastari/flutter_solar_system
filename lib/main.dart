@@ -23,7 +23,9 @@ class MyApp extends StatelessWidget {
         routes: {
           MyHomePage.routeName: (context) => MyHomePage(),
           MyInputScreen.routeName: (ctx) => MyInputScreen(),
-          DetailsScreen.routeName: (ctx) => DetailsScreen(imageId: ''), // ¡Asegúrate de proporcionar el imageId necesario aquí!
+          DetailsScreen.routeName: (ctx) => DetailsScreen(
+              imageId:
+                  ''), // ¡Asegúrate de proporcionar el imageId necesario aquí!
         },
       ),
     );

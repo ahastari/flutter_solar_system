@@ -58,7 +58,7 @@ class _MyInputScreenState extends State<MyInputScreen> {
         decoration: BoxDecoration(
           image: DecorationImage(
             image: NetworkImage(
-              'https://marketplace.canva.com/EAFC85ytNMY/1/0/900w/canva-fondo-para-whatsapp-del-espacio-El7sSnLbULs.jpg',
+              'https://i.pinimg.com/736x/97/04/a3/9704a3edf038940e01dae3d438eb71f0.jpg',
             ),
             fit: BoxFit.cover,
           ),

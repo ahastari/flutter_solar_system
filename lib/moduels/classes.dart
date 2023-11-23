@@ -75,4 +75,6 @@ class ImageFile with ChangeNotifier {
   fetchCircularImages() {}
 
   void addImagePlaceWithUrls(String text, String text2, String text3, List<String> imageUrls) {}
+
+  void deleteImage(String imageId) {}
 }

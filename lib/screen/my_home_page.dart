@@ -7,7 +7,7 @@ import 'details_screen.dart';
 class MyHomePage extends StatefulWidget {
   static const routeName = 'MyHomePage';
 
-  const MyHomePage({Key? key});
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -28,6 +28,12 @@ class _MyHomePageState extends State<MyHomePage> {
     return imageProvider.items;
   }
 
+  Future<void> _refreshImages() async {
+    setState(() {
+      _imagesFuture = fetchImages();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: NetworkImage(
-                  'https://marketplace.canva.com/EAFC85ytNMY/1/0/900w/canva-fondo-para-whatsapp-del-espacio-El7sSnLbULs.jpg',
+                  'https://i.pinimg.com/736x/97/04/a3/9704a3edf038940e01dae3d438eb71f0.jpg',
                 ),
                 fit: BoxFit.cover,
               ),
@@ -57,53 +63,53 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 }
                 final List<ima.ImageData> imageData = snapshot.data!;
-                final List<ima.ImageData> circleImageData = List.from(imageData); // Create a separate list for circles
+                final List<ima.ImageData> circleImageData =
+                    List.from(imageData); 
+
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Expanded(
-                      child: imageData.isEmpty // Show only square images
-                          ? Center(child: Text('No square images'))
-                          : ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: imageData.length,
-                              itemBuilder: (ctx, i) => Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    final imageId = imageData[i].id;
-                                    if (imageId != null) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => DetailsScreen(imageId: imageId),
-                                        ),
-                                      );
-                                    } else {
-                                      // Handle scenario where imageId is null
-                                    }
-                                  },
-                                  child: SizedBox(
-                                    width: 350,
-                                    child: Align(
-                                      alignment: Alignment.center,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(25),
-                                        child: Image.file(
-                                          imageData[i].image,
-                                          fit: BoxFit.cover,
-                                          height: 400,
-                                        ),
-                                      ),
-                                    ),
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: imageData.length,
+                        itemBuilder: (ctx, i) => Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: GestureDetector(
+                            onTap: () async {
+                              final imageId = imageData[i].id;
+                              if (imageId != null) {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DetailsScreen(imageId: imageId),
+                                  ),
+                                );
+                                _refreshImages();
+                              }
+                            },
+                            child: SizedBox(
+                              width: 350,
+                              child: Align(
+                                alignment: Alignment(-0.2, 0.8),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(25),
+                                  child: Image.file(
+                                    imageData[i].image,
+                                    fit: BoxFit.cover,
+                                    height: 400,
                                   ),
                                 ),
                               ),
                             ),
+                          ),
+                        ),
+                      ),
                     ),
-                    SizedBox(height: 16), // Space between lists
+                    SizedBox(height: 16),
                     Container(
-                      height: 200, // Set height for circle images
+                      height: 200,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: circleImageData.length,
@@ -113,17 +119,17 @@ class _MyHomePageState extends State<MyHomePage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               GestureDetector(
-                                onTap: () {
+                                onTap: () async {
                                   final imageId = circleImageData[i].id;
                                   if (imageId != null) {
-                                    Navigator.push(
+                                    await Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => DetailsScreen(imageId: imageId),
+                                        builder: (context) =>
+                                            DetailsScreen(imageId: imageId),
                                       ),
                                     );
-                                  } else {
-                                    // Handle scenario where imageId is null
+                                    _refreshImages();
                                   }
                                 },
                                 child: Container(
@@ -164,17 +170,15 @@ class _MyHomePageState extends State<MyHomePage> {
             context: context,
             builder: (_) {
               return MyInputScreen(
-                onSaved: () {
-                  setState(() {
-                    _imagesFuture = fetchImages(); // Refresh images after saving
-                  });
-                },
+                onSaved: _refreshImages,
               );
             },
           );
         },
         tooltip: 'Add Story',
         child: Icon(Icons.add),
+        backgroundColor: const Color.fromARGB(255, 10, 10, 10).withOpacity(0.6),
+        foregroundColor: Colors.white.withOpacity(0.7),
       ),
     );
   }
