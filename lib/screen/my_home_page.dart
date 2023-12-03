@@ -14,15 +14,29 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late Future<List<ima.ImageData>> _imagesFuture;
+  late Future<List<String>> _imageURLsFuture;
+  late Future<List<ima.ImageData>> _localImagesFuture;
+  int selectedImageIndex = 0;
+  bool showLocalImages = false;
 
   @override
   void initState() {
     super.initState();
-    _imagesFuture = fetchImages();
+    _imageURLsFuture = fetchImageURLs();
+    _localImagesFuture = fetchLocalImages();
   }
 
-  Future<List<ima.ImageData>> fetchImages() async {
+  Future<List<String>> fetchImageURLs() async {
+    // Aquí se simula la obtención de URLs de imágenes
+    return [
+      'https://static.nationalgeographicla.com/files/styles/image_3200/public/1160.jpg?w=1900&h=1426',
+      'https://c8.alamy.com/compes/2c5n1ct/conjunto-de-planetas-brillantes-y-coloridos-sistema-solar-espacio-con-estrellas-ilustracion-de-vector-de-dibujos-animados-2c5n1ct.jpg',
+      'https://img.freepik.com/vector-premium/ilustracion-sistema-solar-estrellas-asteroides_122784-2366.jpg',
+      // Agrega más URLs de imágenes según sea necesario
+    ];
+  }
+
+  Future<List<ima.ImageData>> fetchLocalImages() async {
     final imageProvider = Provider.of<ima.ImageFile>(context, listen: false);
     await imageProvider.fetchImage();
     return imageProvider.items;
@@ -30,139 +44,65 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _refreshImages() async {
     setState(() {
-      _imagesFuture = fetchImages();
+      _imageURLsFuture = fetchImageURLs();
+      _localImagesFuture = fetchLocalImages();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: NetworkImage(
-                  'https://i.pinimg.com/736x/97/04/a3/9704a3edf038940e01dae3d438eb71f0.jpg',
-                ),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          FutureBuilder(
-            future: _imagesFuture,
-            builder: (ctx, AsyncSnapshot<List<ima.ImageData>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else {
-                if (snapshot.hasError || !snapshot.hasData) {
-                  return Center(
-                    child: Text('Error loading data'),
-                  );
-                }
-                final List<ima.ImageData> imageData = snapshot.data!;
-                final List<ima.ImageData> circleImageData =
-                    List.from(imageData); 
+      body: FutureBuilder(
+        future: Future.wait([_imageURLsFuture, _localImagesFuture]),
+        builder: (ctx, AsyncSnapshot<List<dynamic>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            if (snapshot.hasError || snapshot.data == null) {
+              return Center(
+                child: Text('Error loading data'),
+              );
+            }
+            final List<String> imageURLs = snapshot.data![0];
+            final List<ima.ImageData> localImages = snapshot.data![1];
+            final selectedImageURL = imageURLs[selectedImageIndex];
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: imageData.length,
-                        itemBuilder: (ctx, i) => Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: GestureDetector(
-                            onTap: () async {
-                              final imageId = imageData[i].id;
-                              if (imageId != null) {
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        DetailsScreen(imageId: imageId),
-                                  ),
-                                );
-                                _refreshImages();
-                              }
-                            },
-                            child: SizedBox(
-                              width: 350,
-                              child: Align(
-                                alignment: Alignment(-0.2, 0.8),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(25),
-                                  child: Image.file(
-                                    imageData[i].image,
-                                    fit: BoxFit.cover,
-                                    height: 400,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        showLocalImages = !showLocalImages;
+                      });
+                    },
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: imageURLs.length,
+                      itemBuilder: (ctx, i) => Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Image.network(
+                          imageURLs[i],
+                          fit: BoxFit.cover,
+                          width: 300,
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
-                    Container(
-                      height: 200,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: circleImageData.length,
-                        itemBuilder: (ctx, i) => Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              GestureDetector(
-                                onTap: () async {
-                                  final imageId = circleImageData[i].id;
-                                  if (imageId != null) {
-                                    await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            DetailsScreen(imageId: imageId),
-                                      ),
-                                    );
-                                    _refreshImages();
-                                  }
-                                },
-                                child: Container(
-                                  width: 60,
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.blue,
-                                  ),
-                                  child: ClipOval(
-                                    child: Image.file(
-                                      circleImageData[i].image,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 8),
-                              Text(
-                                circleImageData[i].title ?? 'No title',
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              }
-            },
-          ),
-        ],
+                  ),
+                ),
+                if (showLocalImages)
+                  Expanded(
+                    flex: 2,
+                    child: _buildLocalImageList(localImages),
+                  ),
+              ],
+            );
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -179,6 +119,56 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.add),
         backgroundColor: const Color.fromARGB(255, 10, 10, 10).withOpacity(0.6),
         foregroundColor: Colors.white.withOpacity(0.7),
+      ),
+    );
+  }
+
+  Widget _buildLocalImageList(List<ima.ImageData> localImages) {
+    final List<ima.ImageData> circleLocalImages = List.from(localImages);
+
+    return ListView.builder(
+      scrollDirection: Axis.horizontal,
+      itemCount: circleLocalImages.length,
+      itemBuilder: (ctx, i) => Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            GestureDetector(
+              onTap: () async {
+                final imageId = circleLocalImages[i].id;
+                if (imageId != null) {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailsScreen(imageId: imageId),
+                    ),
+                  );
+                  _refreshImages();
+                }
+              },
+              child: Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.blue,
+                ),
+                child: ClipOval(
+                  child: Image.file(
+                    circleLocalImages[i].image,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              circleLocalImages[i].title ?? 'No title',
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

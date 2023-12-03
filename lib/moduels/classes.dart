@@ -13,8 +13,12 @@ class ImageData {
     required this.image,
     required this.title,
     required this.id,
-    required this.story,
+    required this.story, required String especie,
   });
+
+  get imageUrl => null;
+
+  void add(ImageData imageData) {}
 }
 
 // Clase que gestiona una lista de ImageData
@@ -35,7 +39,7 @@ class ImageFile with ChangeNotifier {
       image: image,
       title: title,
       id: DateTime.now().toString(), // Genera un ID único basado en la fecha y hora actual
-      story: story,
+      story: story, especie: '',
     );
     _items.add(newImage); // Agrega la nueva imagen a la lista interna
     notifyListeners(); // Notifica a los oyentes (como los widgets) sobre el cambio en los datos
@@ -62,7 +66,7 @@ class ImageFile with ChangeNotifier {
               image: File(item['image']),
               title: item['title'],
               id: item['id'],
-              story: item['story'],
+              story: item['story'], especie: '',
             ))
         .toList(); // Mapea los datos obtenidos a objetos ImageData
     notifyListeners(); // Notifica a los oyentes sobre el cambio en los datos
