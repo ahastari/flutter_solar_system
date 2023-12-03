@@ -51,8 +51,8 @@ class _MyInputScreenState extends State<MyInputScreen> {
           ),
         ],
         backgroundColor:
-            Colors.blue.withOpacity(0.5), // Ajusta la transparencia aquí
-        elevation: 0, // Quita la sombra de la AppBar si lo deseas
+            const Color.fromARGB(255, 16, 16, 16).withOpacity(0.5), // Ajusta la transparencia aquí
+        elevation: 8, // Quita la sombra de la AppBar si lo deseas
       ),
       body: Container(
         decoration: BoxDecoration(
