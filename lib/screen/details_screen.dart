@@ -54,16 +54,27 @@ class DetailsScreen extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 20),
             Text(
               imageData.title,
               style: TextStyle(fontSize: 30),
             ),
-            SizedBox(
-              height: 20,
+            SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.air), // Tu icono para el gas aquí
+                SizedBox(width: 5),
+                Text(
+                  imageData.gas, // El texto o valor del gas aquí
+                  style: TextStyle(fontSize: 20),
+                ),
+              ],
             ),
+            SizedBox(height: 20),
             Text(
               imageData.story,
-              style: TextStyle(fontSize: 30),
+              style: TextStyle(fontSize: 20),
             ),
           ],
         ),
@@ -71,16 +82,16 @@ class DetailsScreen extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.wb_sunny),
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
-            label: 'Add',
+            label: '',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.delete), // Botón de eliminación
-            label: 'Delete',
+            label: '',
           ),
         ],
         currentIndex: 2,

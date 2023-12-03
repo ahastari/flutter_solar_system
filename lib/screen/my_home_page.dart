@@ -20,16 +20,16 @@ class _MyHomePageState extends State<MyHomePage> {
   bool showLocalImages = false;
 
   final List<String> imageTitles = [
-    'Título de la imagen 1',
-    'Título de la imagen 2',
-    'Título de la imagen 3',
+    'Planets',
+    'Starts',
+    'Meteorites',
     // Agrega más títulos según la cantidad de imágenes
   ];
 
   final List<String> imageSubtitles = [
-    'Subtítulo de la imagen 1',
-    'Subtítulo de la imagen 2',
-    'Subtítulo de la imagen 3',
+    'Solar System',
+    'Solar System',
+    'Solar System',
     // Agrega más subtítulos según la cantidad de imágenes
   ];
 
@@ -43,9 +43,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<List<String>> fetchImageURLs() async {
     // Simulación de obtención de URLs de imágenes
     return [
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSt9-rpjoCT3XTEKKmVMcBinhcPFadcRGHtMtwlIGTBfcu1Y7vBg8hSKOToz7axxha3_9Q&usqp=CAU',
-      'https://c8.alamy.com/compes/2c5n1ct/conjunto-de-planetas-brillantes-y-coloridos-sistema-solar-espacio-con-estrellas-ilustracion-de-vector-de-dibujos-animados-2c5n1ct.jpg',
-      'https://img.freepik.com/vector-premium/ilustracion-sistema-solar-estrellas-asteroides_122784-2366.jpg',
+      'https://upload.wikimedia.org/wikipedia/commons/c/cf/Planet_collage_to_scale.jpg',
+      'https://www.zschimmer-schwarz.es/app/uploads/2020/09/galaxia-sistema-solar-via-lactea-universo-de-que-estan-hechas-las-estrellas-composicion-quimica-de-las-estrellas.jpg',
+      'https://www.ngenespanol.com/wp-content/uploads/2018/08/cual-es-la-diferencia-entre-un-meteoro-un-meteorito-y-un-meteoroide.jpg',
       // Agrega más URLs de imágenes según sea necesario
     ];
   }
@@ -104,13 +104,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     children: [
                       Container(
-                        width: 400,
-                        height: 700,
+                        width: 450,
+                        height: 750,
                         child: PageView.builder(
                           itemCount: imageURLs.length,
                           controller: PageController(
                             initialPage: selectedImageIndex,
-                            viewportFraction: 1.2,
+                            viewportFraction: 0.8,
                           ),
                           onPageChanged: (index) {
                             setState(() {
@@ -119,32 +119,41 @@ class _MyHomePageState extends State<MyHomePage> {
                           },
                           itemBuilder: (context, index) {
                             return Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 60),
+                              padding: EdgeInsets.symmetric(horizontal: 8),
                               child: Center(
-                                
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      imageTitles[index],
-                                      style: TextStyle(
-                                        fontSize: 24,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                child: Card(
+                                  elevation: 5,
+                                  child: SizedBox(
+                                    width: 400,
+                                    height: 400,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          imageTitles[index],
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          imageSubtitles[index],
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        SizedBox(height: 16),
+                                        Image.network(
+                                          imageURLs[index],
+                                          fit: BoxFit.cover,
+                                          width: 300,
+                                          height: 300,
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      imageSubtitles[index],
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    SizedBox(height: 16),
-                                    Image.network(
-                                      imageURLs[index],
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             );

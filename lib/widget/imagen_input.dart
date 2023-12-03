@@ -62,7 +62,8 @@ class _ImagenInputState extends State<ImagenInput> {
           height: 180,
           width: 180,
           decoration: BoxDecoration(
-            border: Border.all(width: 2, color: Colors.deepOrange),
+            
+            border: Border.all(width: 2, color: Color.fromARGB(255, 130, 123, 120)),
           ),
           child: _imageFile != null
               ? Image.file(
@@ -70,7 +71,7 @@ class _ImagenInputState extends State<ImagenInput> {
                   fit: BoxFit.cover,
                 )
               : Center(
-                  child: Text('No Image Yet, add one'),
+                  child: Text(''),
                 ),
         ),
         SizedBox(
@@ -82,8 +83,9 @@ class _ImagenInputState extends State<ImagenInput> {
             // Botón para seleccionar una imagen desde la galería
             TextButton.icon(
               onPressed: _getImageFromGallery,
+              
               icon: Icon(Icons.image),
-              label: Text('Add your image'),
+              label: Text('Galery'),
             ),
             // Botón para capturar una imagen usando la cámara
             TextButton.icon(

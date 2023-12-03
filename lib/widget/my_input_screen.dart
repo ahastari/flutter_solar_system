@@ -89,7 +89,7 @@ class _MyInputScreenState extends State<MyInputScreen> {
                 TextField(
                   controller: _especieController,
                   decoration: InputDecoration(
-                    labelText: 'Especie',
+                    labelText: 'GAS',
                   ),
                 ),
                 SizedBox(

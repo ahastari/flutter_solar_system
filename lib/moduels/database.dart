@@ -8,7 +8,7 @@ class DataHelper {
       path.join(datapath, 'image.db'),
       onCreate: (db, version) {
         return db.execute(
-            'CREATE TABLE user_image(id TEXT PRIMARY KEY, title TEXT, image TEXT, story TEXT)');
+            'CREATE TABLE user_image(id TEXT PRIMARY KEY, title TEXT, image TEXT, story TEXT, gas TEXT)');
       },
       version: 1,
     );

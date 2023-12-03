@@ -8,12 +8,14 @@ class ImageData {
   final String title;
   final String story;
   final File image;
+  final String gas;
 
   ImageData({
     required this.image,
     required this.title,
     required this.id,
-    required this.story, required String especie,
+    required this.story,
+    required this.gas,
   });
 
   get imageUrl => null;
@@ -27,21 +29,23 @@ class ImageData {
 class ImageFile with ChangeNotifier {
   List<ImageData> _items = []; // Lista interna de datos de imágenes
   List<ImageData> get items {
-    return [..._items]; // Devuelve una copia de la lista de imágenes para evitar modificaciones externas
+    return [
+      ..._items
+    ]; // Devuelve una copia de la lista de imágenes para evitar modificaciones externas
   }
 
   Future<List<ImageData>>? get horizontalImages => null;
 
   List<ImageData>? get circularImages => null;
 
-
   // Método para añadir una nueva imagen con título, historia y archivo de imagen
   Future<void> addImagePlace(String title, String story, File image) async {
     final newImage = ImageData(
       image: image,
       title: title,
-      id: DateTime.now().toString(), // Genera un ID único basado en la fecha y hora actual
-      story: story, especie: '',
+      id: DateTime.now()
+          .toString(), // Genera un ID único basado en la fecha y hora actual
+      story: story, gas: '',
     );
     _items.add(newImage); // Agrega la nueva imagen a la lista interna
     notifyListeners(); // Notifica a los oyentes (como los widgets) sobre el cambio en los datos
@@ -62,13 +66,15 @@ class ImageFile with ChangeNotifier {
 
   // Método para obtener las imágenes desde la base de datos
   Future<void> fetchImage() async {
-    final lis = await DataHelper.getData('user_image'); // Obtiene datos de la base de datos
+    final lis = await DataHelper.getData(
+        'user_image'); // Obtiene datos de la base de datos
     _items = lis
         .map((item) => ImageData(
               image: File(item['image']),
               title: item['title'],
               id: item['id'],
-              story: item['story'], especie: '',
+              story: item['story'],
+              gas: '',
             ))
         .toList(); // Mapea los datos obtenidos a objetos ImageData
     notifyListeners(); // Notifica a los oyentes sobre el cambio en los datos
@@ -80,7 +86,8 @@ class ImageFile with ChangeNotifier {
 
   fetchCircularImages() {}
 
-  void addImagePlaceWithUrls(String text, String text2, String text3, List<String> imageUrls) {}
+  void addImagePlaceWithUrls(
+      String text, String text2, String text3, List<String> imageUrls) {}
 
   void deleteImage(String imageId) {}
 }
