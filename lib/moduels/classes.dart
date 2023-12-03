@@ -18,6 +18,8 @@ class ImageData {
 
   get imageUrl => null;
 
+  get images => null;
+
   void add(ImageData imageData) {}
 }
 

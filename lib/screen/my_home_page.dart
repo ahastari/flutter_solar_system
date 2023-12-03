@@ -19,6 +19,20 @@ class _MyHomePageState extends State<MyHomePage> {
   int selectedImageIndex = 0;
   bool showLocalImages = false;
 
+  final List<String> imageTitles = [
+    'Título de la imagen 1',
+    'Título de la imagen 2',
+    'Título de la imagen 3',
+    // Agrega más títulos según la cantidad de imágenes
+  ];
+
+  final List<String> imageSubtitles = [
+    'Subtítulo de la imagen 1',
+    'Subtítulo de la imagen 2',
+    'Subtítulo de la imagen 3',
+    // Agrega más subtítulos según la cantidad de imágenes
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -27,9 +41,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<List<String>> fetchImageURLs() async {
-    // Aquí se simula la obtención de URLs de imágenes
+    // Simulación de obtención de URLs de imágenes
     return [
-      'https://static.nationalgeographicla.com/files/styles/image_3200/public/1160.jpg?w=1900&h=1426',
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSt9-rpjoCT3XTEKKmVMcBinhcPFadcRGHtMtwlIGTBfcu1Y7vBg8hSKOToz7axxha3_9Q&usqp=CAU',
       'https://c8.alamy.com/compes/2c5n1ct/conjunto-de-planetas-brillantes-y-coloridos-sistema-solar-espacio-con-estrellas-ilustracion-de-vector-de-dibujos-animados-2c5n1ct.jpg',
       'https://img.freepik.com/vector-premium/ilustracion-sistema-solar-estrellas-asteroides_122784-2366.jpg',
       // Agrega más URLs de imágenes según sea necesario
@@ -52,57 +66,102 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        future: Future.wait([_imageURLsFuture, _localImagesFuture]),
-        builder: (ctx, AsyncSnapshot<List<dynamic>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            if (snapshot.hasError || snapshot.data == null) {
-              return Center(
-                child: Text('Error loading data'),
-              );
-            }
-            final List<String> imageURLs = snapshot.data![0];
-            final List<ima.ImageData> localImages = snapshot.data![1];
-            final selectedImageURL = imageURLs[selectedImageIndex];
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(
+                  'https://i.pinimg.com/736x/97/04/a3/9704a3edf038940e01dae3d438eb71f0.jpg',
+                ),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          FutureBuilder(
+            future: Future.wait([_imageURLsFuture, _localImagesFuture]),
+            builder: (ctx, AsyncSnapshot<List<dynamic>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else {
+                if (snapshot.hasError || snapshot.data == null) {
+                  return Center(
+                    child: Text('Error loading data'),
+                  );
+                }
+                final List<String> imageURLs = snapshot.data![0];
+                final List<ima.ImageData> localImages = snapshot.data![1];
+                final selectedImageURL = imageURLs[selectedImageIndex];
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        showLocalImages = !showLocalImages;
-                      });
-                    },
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: imageURLs.length,
-                      itemBuilder: (ctx, i) => Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.network(
-                          imageURLs[i],
-                          fit: BoxFit.cover,
-                          width: 300,
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      showLocalImages = !showLocalImages;
+                    });
+                  },
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 400,
+                        height: 700,
+                        child: PageView.builder(
+                          itemCount: imageURLs.length,
+                          controller: PageController(
+                            initialPage: selectedImageIndex,
+                            viewportFraction: 1.2,
+                          ),
+                          onPageChanged: (index) {
+                            setState(() {
+                              selectedImageIndex = index;
+                            });
+                          },
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 60),
+                              child: Center(
+                                
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      imageTitles[index],
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      imageSubtitles[index],
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
+                                    Image.network(
+                                      imageURLs[index],
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
-                    ),
+                      if (showLocalImages)
+                        Expanded(
+                          child: _buildLocalImageList(localImages),
+                        ),
+                    ],
                   ),
-                ),
-                if (showLocalImages)
-                  Expanded(
-                    flex: 2,
-                    child: _buildLocalImageList(localImages),
-                  ),
-              ],
-            );
-          }
-        },
+                );
+              }
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -124,11 +183,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildLocalImageList(List<ima.ImageData> localImages) {
-    final List<ima.ImageData> circleLocalImages = List.from(localImages);
-
     return ListView.builder(
       scrollDirection: Axis.horizontal,
-      itemCount: circleLocalImages.length,
+      itemCount: localImages.length,
       itemBuilder: (ctx, i) => Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -136,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             GestureDetector(
               onTap: () async {
-                final imageId = circleLocalImages[i].id;
+                final imageId = localImages[i].id;
                 if (imageId != null) {
                   await Navigator.push(
                     context,
@@ -156,7 +213,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 child: ClipOval(
                   child: Image.file(
-                    circleLocalImages[i].image,
+                    localImages[i].image!,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -164,7 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             SizedBox(height: 8),
             Text(
-              circleLocalImages[i].title ?? 'No title',
+              localImages[i].title ?? 'No title',
               textAlign: TextAlign.center,
             ),
           ],
